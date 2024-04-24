@@ -1,53 +1,34 @@
 from allauth.socialaccount import providers
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-
-# Logging
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
-# Custom Geonode provider
-class CustomAccount(ProviderAccount):
-    """
-    `CustomAccount` class for `CustomProvider`.
-
-    Find more documentation [HERE](https://petersimpson.dev/blog/django-allauth-custom-provider/)
-
-    """
+class OAuthToolkitAccount(ProviderAccount):
     pass
 
-
-class CustomProvider(OAuth2Provider):
-
-    """
-    `CustomProvider` class to handle OAUTH2 authentication against a Geonode server.
-
-    Find more documentation regarding custom provider setup [HERE](https://petersimpson.dev/blog/django-allauth-custom-provider/)
-
-    The Geonode server must have custom Django application `UserDetails` installed to expose required data.
-
-    Find more documentation regarding custom Django application `UserDetails` [HERE](https://github.com/phardy-egis/django-geonode-userdetails.git)
-
-    """
+class OAuthToolkitProvider(OAuth2Provider):
 
     id = 'oauthtoolkitprovider'
     name = 'oauthtoolkitprovider'
-    account_class = CustomAccount
+    account_class = OAuthToolkitAccount
+    pkce_enabled_default = True
 
     def extract_uid(self, data):
-        logger.debug('OAUTH2 (user ID): {data}'.format(data=str(data)))
+        print('data')
+        print(data)
+        logger.error(data)
         return str(data['id'])
 
     def extract_common_fields(self, data):
-        logger.debug('OAUTH2 (data): {data}'.format(data=str(data)))
-        if data['auth']:
-            return dict(username=data['username'], first_name=data['username'], last_name=data['username'],)
-        else:
-            return None
+        print(data)
+        return dict(
+            email=data['email'],
+            first_name=data['username'],
+        )
 
     def get_default_scope(self):
-        scope = ['write']
+        scope = ['read']
         return scope
 
-
-providers.registry.register(CustomProvider)
+providers.registry.register(OAuthToolkitProvider)
