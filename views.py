@@ -16,7 +16,6 @@ class OAuthToolkitAdapter(OAuth2Adapter):
         headers = {'Authorization': f'Bearer {token.token}', 'Accept':'application/json'}
         resp = requests.get(self.profile_url, headers=headers)
         extra_data = resp.json()
-        print(extra_data)
         return self.get_provider().sociallogin_from_response(request, extra_data)
 
 
