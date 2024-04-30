@@ -26,6 +26,7 @@ class OAuthToolkitProvider(OAuth2Provider):
     def extract_common_fields(self, data):  
         # storing roles in session variable to sync roles after log in
         self.request.session["synced_roles"] = {"values":data['roles']}
+        self.request.session["is_superuser"] = {"values":data['is_admin']}
         return dict(
             username=data['username'],
             email=data['email'],
@@ -54,7 +55,11 @@ def sync_user_groups_after_login(sender, user, request, **kwargs):
     groupsmembers_to_remove = GroupMember.objects.exclude(group__in=user_groups).filter(user=user).distinct()
     for groupsmember_to_remove in groupsmembers_to_remove:
         groupsmember_to_remove.group.leave(user)
-        
+
+    # If user is admin we update its rights
+    if request.session["is_superuser"]:
+        user.is_superuser=True
+        user.save()
 
 user_logged_in.connect(sync_user_groups_after_login)
 providers.registry.register(OAuthToolkitProvider)
