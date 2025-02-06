@@ -1,11 +1,10 @@
 import requests
 from allauth.socialaccount.providers.oauth2.views import (OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView)
-from .provider import OAuthToolkitProvider
 from geonode import settings
 
 
 class OAuthToolkitAdapter(OAuth2Adapter):
-    provider_id = OAuthToolkitProvider.id
+    provider_id = "oauthtoolkitprovider"
 
     # Fetched programmatically, must be reachable from container
     access_token_url = '{}/api/o/token/'.format(settings.OAUTH_SERVER_BASEURL_INTERNAL)

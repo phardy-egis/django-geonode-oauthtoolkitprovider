@@ -4,20 +4,22 @@ from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 from allauth.account.signals import user_logged_in
 import logging
 # from .utils import sync_groups
-from django.contrib.auth.models import Group
 from geonode.groups.models import GroupProfile, GroupMember
 from slugify import slugify
+from .views import OAuthToolkitAdapter
 
 logger = logging.getLogger("django")
 
 class OAuthToolkitAccount(ProviderAccount):
     pass
 
+# Based on this documentation https://raphaelyancey.fr/en/2018/05/28/setting-up-django-oauth2-server-client.html
 class OAuthToolkitProvider(OAuth2Provider):
 
     id = 'oauthtoolkitprovider'
     name = 'oauthtoolkitprovider'
     account_class = OAuthToolkitAccount
+    oauth2_adapter_class = OAuthToolkitAdapter
     pkce_enabled_default = True
 
     def extract_uid(self, data):
